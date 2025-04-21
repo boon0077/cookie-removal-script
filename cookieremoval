@@ -1,0 +1,38 @@
+<script>
+(function() {
+  function getPossiblePaths() {
+    var segments = window.location.pathname.split('/').filter(Boolean);
+    var paths = ['/'];
+    var accumulatedPath = '';
+    segments.forEach(function(segment) {
+      accumulatedPath += '/' + segment;
+      paths.push(accumulatedPath);
+    });
+    return paths;
+  }
+
+  function deleteCookie(name, domain, path) {
+    document.cookie = name + '=; domain=' + domain + '; path=' + path + '; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  }
+
+  var cookieArray = document.cookie.split(';');
+  var domainParts = window.location.hostname.split('.');
+  var currentDomain = window.location.hostname;
+  var topLevelDomain = (domainParts.length > 1) ? '.' + domainParts.slice(-2).join('.') : currentDomain;
+  var possiblePaths = getPossiblePaths();
+
+  cookieArray.forEach(function(cookieStr) {
+    var cookieName = cookieStr.split('=')[0].trim();
+    possiblePaths.forEach(function(path) {
+      deleteCookie(cookieName, currentDomain, path);
+    });
+    if (topLevelDomain !== currentDomain) {
+      possiblePaths.forEach(function(path) {
+        deleteCookie(cookieName, topLevelDomain, path);
+      });
+    }
+  });
+
+  console.log('Attempted to delete all cookies on all possible paths and domains.');
+})();
+</script>
